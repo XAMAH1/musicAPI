@@ -1,27 +1,26 @@
 import datetime
 
+from fastapi import FastAPI
+import uvicorn
+from user.view import autohorizen
 from base.main import *
 
-print('Успешно')
+app = FastAPI()
+app.include_router(autohorizen, tags=["Пользователь"])
 
-result = session.query(ban_user).filter(ban_user.mail == "cuperopen@mail.ru")
+res = session.query(user_code).filter(user_code.id == 1)
+for i in res:
+    print(i.date_create)
+    print(i.time)
+    day_code = str(i.date_create).split(" ")
+    date = datetime.datetime(int(day_code[0].split("-")[0]), int(day_code[0].split("-")[1]), int(day_code[0].split("-")[2]),
+                             int(day_code[1].split(":")[0]), int(day_code[1].split(":")[1]), int(day_code[1].split(":")[2]))
+    if date + datetime.timedelta(hours=int(str(i.time).split(":")[0]), minutes=int(str(i.time).split(":")[1])) < datetime.datetime.today():
+        print("Код больше не действителен")
+    print(date)
 
+print(f"[{datetime.datetime.today().strftime('%H:%M:%S')}] [API] initialization was completed successfully")
 
-def test():
-    mus = music()
-    mus.path_music = 'test'
-    mus.name = 'да'
-    mus.duration = "15:00"
-    mus.nickname = "XAMAH"
-    session.add(mus)
-    session.commit()
-
-
-for i in result:
-    print(i.autme_realt.user_realt.favourites_album_realt.album_realt.album_music_realt.music_realt.genre_music_realt.genre_realt.name)
-
-
-result = session.query(genre_music).filter(genre_music.id == 1)
-
-for i in result:
-    print(i.music_realt.path_cover)
+if __name__ == "__main__":
+    print(f"[{datetime.datetime.today().strftime('%H:%M:%S')}] [API] initialization has started")
+    uvicorn.run("main:app", host='192.168.3.8', port=8000)
